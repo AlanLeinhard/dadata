@@ -735,9 +735,9 @@ This library uses [CalVer](https://calver.org/) with YY.MM.MICRO schema. See cha
 
 [pypi-image]: https://img.shields.io/pypi/v/dadata?style=flat-square
 [pypi-url]: https://pypi.org/project/dadata/
-[build-image]: https://img.shields.io/travis/AlanLeinhard/dadata-py?style=flat-square
-[build-url]: https://travis-ci.org/AlanLeinhard/dadata-py
-[coverage-image]: https://img.shields.io/coveralls/github/AlanLeinhard/dadata-py?style=flat-square
-[coverage-url]: https://coveralls.io/github/AlanLeinhard/dadata-py
-[quality-image]: https://img.shields.io/codeclimate/maintainability/AlanLeinhard/dadata-py?style=flat-square
-[quality-url]: https://codeclimate.com/github/AlanLeinhard/dadata-py
+[build-image]: https://img.shields.io/travis/AlanLeinhard/dadata?style=flat-square
+[build-url]: https://travis-ci.org/AlanLeinhard/dadata
+[coverage-image]: https://img.shields.io/coveralls/github/AlanLeinhard/dadata?style=flat-square
+[coverage-url]: https://coveralls.io/github/AlanLeinhard/dadata
+[quality-image]: https://img.shields.io/codeclimate/maintainability/AlanLeinhard/dadata?style=flat-square
+[quality-url]: https://codeclimate.com/github/AlanLeinhard/dadata
