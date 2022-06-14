@@ -1,0 +1,40 @@
+{% extends 'site/master.html' %}
+
+{% block title %}
+<title>Главная</title>
+{% endblock %}
+
+
+{% block content%}
+
+<!-- Сетка с плитками -->
+
+<div class="setka">
+
+  <!-- Первый ряд -->
+
+  <div class="row">
+
+    {% for el in item %}
+{%  if el.active %}
+    <div class="elementsetki col">
+      <a href="/service/{{el.id}}">
+        <div class="holder cola col" style= "background-image: url('data:;base64,{{ el.image }}')">
+          <div class="block" style= "background-image: url('data:;base64,{{ el.image }}')">
+            <div class="text_holder " style="text-overflow: ellipsis; overflow: hidden; text-align: center; color: white;">
+            <h2 style="text-overflow: ellipsis;">{{el.title}}</h2>
+            {{el.desc}}
+          </div>
+          </div>
+
+        </div>
+    </div> </a>
+
+    {%  endif %}
+
+    {%endfor%}
+
+  </div>
+</div>
+
+{% endblock %}

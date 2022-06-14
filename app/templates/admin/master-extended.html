@@ -1,0 +1,417 @@
+{% extends 'base.html' %}
+{% block access_control %}
+
+{% if current_user.is_authenticated %}
+
+
+
+<div class="row-fluid">
+
+    <div>
+        {% if current_user.is_authenticated %}
+        <div>
+            <h2 style="margin-top: 20px;">Сведения о пользователе</h2>
+            <ul>
+                <li>Имя пользователя: {{ current_user.name }}</li>
+                <li>Имя пользователя: {{ current_user.username }}</li>
+                <li>Email: {{ current_user.email }}</li>
+                <li>Зарегистрирован: {{ current_user.created_on }}</li>
+                <li>Изменён: {{ current_user.updated_on }}</li>
+            </ul>
+            <div class="btn-group pull-right">
+                <a class="btn b_nav btn-primary" style="margin-bottom: 50px; margin-top: 10px;"
+                    href="{{ url_for('admin.logout_page') }}">{{ current_user.username }} - Выйти</a>
+
+            </div>
+
+            <h2>Возможности и настройки</h2>
+            <p class="lead">Изменить цвет фона: </p>
+            <div class="row " style="width: 25%; margin: 0;">
+                <input type="color" list="colorList" name="idColor" id="idColor" value="#085C8C"
+                    style="height: 40px; width: 30; " class="col">
+                <datalist id="colorList">
+                    <option value="#ff0000" label="Красный">
+                    <option value="#008000" label="Зелёный">
+                    <option value="#0000ff" label="Синий">
+                    <option value="#ffffff" label="Белый">
+                    <option value="#cccccc" label="Серый">
+                </datalist>
+                <output id="rezultatColor" style="display: none;"></output>
+                <button onclick="selectcolor()" class="btn b_nav b_navig btn-primary col"> Применить </button>
+            </div>
+            <!-- <p><a href="/admin/change/">Изменить пароль</a></p> -->
+
+            <div class="user_settings">
+                <p class="lead" style="margin-top: 10px;">Редактировать учётную запись: </p>
+                <a href="lk/user_settings/{{current_user.id}}"><button class="btn b_nav btn-primary">Редактировать</button></a>
+            </div>
+
+        </div>
+
+        {% else %}
+        <form method="POST" action="">
+            {{ form.hidden_tag() if form.hidden_tag }}
+            {% for f in form if f.type != 'CSRFTokenField' %}
+            <div>
+                {{ f.label }}
+                {{ f }}
+                {% if f.errors %}
+                <ul>
+                    {% for e in f.errors %}
+                    <li>{{ e }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+            {% endfor %}
+            <!-- <button class="btn" type="submit">Submit</button> -->
+        </form>
+        {{ link | safe }}
+        {% endif %}
+    </div>
+
+    {% endif %}
+    {% endblock %}
+
+
+
+    {% block content %}
+
+    <div>
+        <div>
+
+            <p class="lead" style="margin-top: 10px;">Таблица данных:</p>
+            <div class="tabe " style="display: flex;">
+                {% if current_user.has_role('admin') %}
+                <button class="tablinkse" onclick="openServ(event, 'servises_table')"> Сервисы</button>
+                {% endif %}
+                {% if current_user.has_role('admin') or current_user.has_role('prepod') or
+                current_user.has_role('kursant') %}
+                <button class="tablinkse" onclick="openServ(event, 'projects_table')"> Проекты</button>
+                {% endif %}
+                {% if current_user.has_role('admin') or current_user.has_role('prepod') %}
+                <button class="tablinkse" onclick="openServ(event, 'news_table')">Новости</button>
+                {% endif %}
+                {% if current_user.has_role('admin') %}
+                <button class="tablinkse" onclick="openServ(event, 'users_table')">Пользователи</button>
+                <button class="tablinkse" onclick="openServ(event, 'roles_table')">Роли</button>
+                {% endif %}
+                <button class="tablinkse" style="margin-left: auto;" onclick="openServ()">Скрыть</button>
+            </div>
+
+
+            {% if current_user.has_role('admin') %}
+            <div id="servises_table" class="tabcontente">
+                <h3>Сервисы сайта</h3>
+                <div class="window_form">
+                    <form enctype="multipart/form-data" method="post">
+                        <table border="1">
+                            <caption> </caption>
+                            <tr>
+                                <th>Название</th>
+                                <th>Описание</th>
+                                <th>Создан</th>
+                                <th>Ссылка</th>
+                                <!-- <th>Изображение</th> -->
+                                <th>Действие</th>
+                            </tr>
+
+                            {% for el in services %}
+
+                            <tr>
+                                <td id="title">{{el.title}} </td>
+                                <td>{{el.desc}}</td>
+                                <td>{{el.created}}</td>
+                                <td>{{el.url_serv}}</td>
+                                <!-- <td><img src='data:;base64,{{ el.image }}' width='100%' height='100%' /></td> -->
+                                <td><a href="service/{{el.id}}/del" class="btn b_nav btn-primary"> Удалить</a>
+                                    <a href="service/{{el.id}}/upd" class="btn b_nav btn-primary"> Редактировать</a>
+                                    <a href="service/{{el.id}}/onoff" class="btn b_nav btn-primary"> {%  if el.active %}  Off {%  else %} On {%  endif %} </a></td>
+                            </tr>
+
+                            {%endfor%}
+
+                        </table>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if current_user.has_role('admin') or current_user.has_role('prepod') or current_user.has_role('kursant') %}
+            <div id="projects_table" class="tabcontente">
+                <h3>Проекты пользователей</h3>
+                <div class="window_form">
+                    <form enctype="multipart/form-data" method="post">
+                        <table border="1">
+                            <caption> </caption>
+                            <tr>
+                                <th>Название</th>
+                                <th>Автор</th>
+                                <th>Описание</th>
+                                <th>Создан</th>
+                                <th>Ссылка</th>
+                                <!-- <th>Изображение</th> -->
+                                <th>Действие</th>
+                            </tr>
+
+                            {% for el in projects %}
+
+                            <tr>
+                                <td id="title">{{el.title}} </td>
+                                <td>{{el.author_id}}</td>
+                                <td>{{el.desc}}</td>
+                                <td>{{el.created}}</td>
+                                <td>{{el.url_serv}}</td>
+                                <!-- <td><img src='data:;base64,{{ el.image }}' width='100%' height='100%' /></td> -->
+                                {% if current_user.has_role('admin') or current_user.id == el.author_id %}
+                                <td><a href="project/{{el.id}}/del" class="btn b_nav btn-primary"> Удалить</a>
+                                    <a href="project/{{el.id}}/upd" class="btn b_nav btn-primary"> Редактировать</a>
+                                    <a href="project/{{el.id}}/onoff" class="btn b_nav btn-primary"> {%  if el.active %}  Off {%  else %} On {%  endif %} </a></td>
+                                {% endif %}
+                            </tr>
+
+                            {%endfor%}
+
+                        </table>
+                    </form>
+                </div>
+            </div>
+
+            {% endif %}
+
+            {% if current_user.has_role('admin') or current_user.has_role('prepod') %}
+            <div id="news_table" class="tabcontente">
+                <h3>Новости сайта</h3>
+                <div class="window_form">
+                    <form enctype="multipart/form-data" method="post">
+                        <table border="1">
+                            <caption> </caption>
+                            <tr style="word-break:break-all;">
+                                <th>Название</th>
+                                <th>Автор</th>
+                                <th>Описание</th>
+                                <th>Дата создания</th>
+                                <th>Содержание</th>
+                                <!-- <th>Изображение</th> -->
+                                <th>Действия</th>
+                            </tr>
+
+                            {% for el in news %}
+
+                            <tr style="max-height:300px;">
+                                <td>{{el.title}} </td>
+                                <td>{{el.author_id}} </td>
+                                <td>{{el.desc}}</td>
+                                <td>{{el.created}}</td>
+                                <td>
+                                    <div
+                                        style="overflow: scroll; overflow-x:hidden;  word-break:break-all; text-overflow: ellipsis; max-height:300px; ">
+                                        {{el.body}}</div>
+                                </td>
+                                <!-- <td><img src='data:;base64,{{ el.image }}' width='100%' height='100%' /></td> -->
+
+                                {% if current_user.has_role('admin') or current_user.id == el.author_id %}
+
+                                <td><a href="news/{{el.id}}/del" class="btn b_nav btn-primary">Удалить</a>
+                                    <a href="news/{{el.id}}/upd" class="btn b_nav btn-primary">Редактировать</a></td>
+
+                                {% endif %}
+                            </tr>
+
+                            {%endfor%}
+
+                        </table>
+                    </form>
+                </div>
+            </div>
+
+            {% endif %}
+
+            {% if current_user.has_role('admin') %}
+            <div id="users_table" class="tabcontente">
+                <h3>Пользователи сайта</h3>
+                <div class="window_form">
+                    <form enctype="multipart/form-data" method="post">
+                        <table border="1">
+                            <caption> </caption>
+                            <tr>
+                                <th>id</th>
+                                <th>ФИО</th>
+                                <th>Имя пользователя</th>
+                                <th>Эл. почта</th>
+                                <th>Создан</th>
+                                <th>Изменён</th>
+                            </tr>
+
+                            {% for el in users %}
+
+                            <tr>
+                                <td>{{el.id}} </td>
+                                <td>{{el.name}}</td>
+                                <td>{{el.username}}</td>
+                                <td>{{el.email}}</td>
+                                <td>{{el.created_on}} </td>
+                                <td>{{el.updated_on}} </td>
+                                <td><a href="user/{{el.id}}/del" class="btn b_nav btn-primary">Удалить</a>
+                                    <a href="lk/user_settings/{{el.id}}" class="btn b_nav btn-primary">Редактировать</a></td>
+                            </tr>
+
+                            {%endfor%}
+
+                        </table>
+                    </form>
+                </div>
+            </div>
+
+
+            <div id="roles_table" class="tabcontente">
+                <h3>Роли пользователей</h3>
+                <div class="window_form">
+                    <form enctype="multipart/form-data" method="post">
+                        <table border="1">
+                            <caption> </caption>
+                            <tr>
+                                <th>id</th>
+                                <th>name</th>
+                                <th>description</th>
+                            </tr>
+
+                            {% for el in roles %}
+
+                            <tr>
+                                <td>{{el.id}} </td>
+                                <td>{{el.name}} </td>
+                                <td>{{el.description}}</td>
+                                <td><a href="role/{{el.id}}/del" class="btn b_nav btn-primary">Delete</a></td>
+                            </tr>
+
+                            {%endfor%}
+
+                        </table>
+                    </form>
+                </div>
+            </div>
+
+            {% endif %}
+        </div>
+
+    </div>
+
+
+
+
+
+    <p class="lead" style="margin-top: 10px;">Добавление элементов:</p>
+    <div class="row-fluid">
+
+        <div class="tab " style="display: flex;">
+
+            {% if current_user.has_role('admin') %}
+            <button class="tablinks" onclick="openCity(event, 'Сервис')">Добавить сервис</button>
+            {% endif %}
+
+            {% if current_user.has_role('admin') or current_user.has_role('prepod') %}
+            <button class="tablinks" onclick="openCity(event, 'Новость')">Добавить новость</button>
+            {% endif %}
+
+            {% if current_user.has_role('admin') or current_user.has_role('prepod') or current_user.has_role('kursant')
+            %}
+            <button class="tablinks" onclick="openCity(event, 'Проект')">Добавить проект</button>
+            {% endif %}
+            <!-- <button class="tablinks" onclick="openCity(event, 'Проект')">Добавить проект</button> -->
+            <button class="tablinks" style="margin-left: auto;" onclick="openCity()">Скрыть</button>
+        </div>
+
+
+        {% if current_user.has_role('admin') %}
+        <div id="Сервис" class="tabcontent">
+
+            <h3>Сервис</h3>
+
+            <div class="window_form">
+                <form enctype="multipart/form-data" method="post">
+
+                    {{ form.csrf_token }}
+                    {{form.title.label}}
+                    {{form.title(class="form-control", id="servis_title", type="text",placeholder="", )}}
+                    {{form.desc.label}}
+                    {{form.desc(class="form-control", type="text",placeholder="" )}}
+                    {{form.url_serv.label}}
+                    {{form.url_serv(class="form-control", type="text",placeholder="" )}}
+                    {{form.image.label}}
+                    {{form.image(class="form_image_admin")}}
+                    {{form.submit(onclick="alerte()", type="submit", class="btn b_nav btn-primary" )}}
+
+                    {{form.title2(class="form-control f_c", type="text",placeholder="", value="services" )}}
+
+                </form>
+            </div>
+        </div>
+
+        {% endif %}
+
+        {% if current_user.has_role('admin') or current_user.has_role('prepod') %}
+        <div id="Новость" class="tabcontent">
+            <h3>Новость</h3>
+            <div class="window_form">
+                <form enctype="multipart/form-data" method="post">
+
+                    {{ form2.csrf_token }}
+                    {{form2.title.label}}
+                    {{form2.title(class="form-control", type="text",placeholder="", )}}
+                    {{form2.desc.label}}
+                    {{form2.desc(class="form-control", id="exampleFormControlTextarea1" )}}
+                    {{form2.body.label}}
+                    <!-- <div class="mb-3">
+                        <label for="exampleFormControlTextarea1" class="form-label">Example textarea</label>
+                        <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                      </div> -->
+                    {{form2.body(class="form-control", type="text",placeholder="" )}}
+                    {{form2.image.label}}
+                    {{form2.image(class="form_image_admin")}}
+                    {{form2.submit( type="submit", class="btn b_nav btn-primary")}}
+
+                    {{form2.title2(class="form-control f_c", type="text",placeholder="", value="news" )}}
+
+                </form>
+            </div>
+
+        </div>
+        {% endif %}
+
+
+        {% if current_user.has_role('admin') or current_user.has_role('prepod') or current_user.has_role('kursant') %}
+        <div id="Проект" class="tabcontent">
+
+            <h3>Проект</h3>
+
+            <div class="window_form">
+                <form enctype="multipart/form-data" method="post">
+
+                    {{ form3.csrf_token }}
+                    {{form3.title.label}}
+                    {{form3.title(class="form-control", id="project_title", type="text",placeholder="", )}}
+                    {{form3.desc.label}}
+                    {{form3.desc(class="form-control", type="text",placeholder="" )}}
+                    {{form3.url_serv.label}}
+                    {{form3.url_serv(class="form-control", type="text",placeholder="" )}}
+                    {{form3.image.label}}
+                    {{form3.image(class="form_image_admin")}}
+                    {{form3.submit(onclick="alerte()", type="submit", class="btn b_nav btn-primary" )}}
+
+                    {{form3.title2(class="form-control f_c", type="text",placeholder="", value="projects" )}}
+
+                </form>
+            </div>
+        </div>
+
+        {% endif %}
+    </div>
+</div>
+{% endblock content %}
+
+
+{% block content2 %}
+
+
+{% endblock %}

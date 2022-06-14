@@ -4,6 +4,6 @@ dadata = Dadata(token)
 result = dadata.suggest("address", "воронеж, пр-т патриотов д.31/2 кв.40")
 
 info = str(result)
-info = str(info[info.find('value'):info.find("',")])
+# info = str(info[info.find('value'):info.find("',")])
 
 print(info)

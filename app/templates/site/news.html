@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<title>Главная</title>
+{% endblock %}
+
+
+{% block content%}
+<div style="text-align: center;">
+<h1>{{post.title}}</h1>
+</div> 
+
+<br>
+
+
+<br>
+
+<div>
+    {{post.desc}}
+</div>
+<br>
+
+<p style="word-break:break-all;">
+    {{post.body}}
+</p>
+<br>
+
+
+
+<img src='data:;base64,{{ post.image }}' width='100%' height='100%' />
+<div>
+    {{post.created}}
+</div>
+{% endblock %}
