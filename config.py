@@ -1,5 +1,5 @@
 host        = 'localhost'
 user        = 'postgres'
 password    = 'postgres'
-db_name     = 'fias'
+db_name     = 'short_fias'
 port        = 5432

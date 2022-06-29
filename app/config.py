@@ -11,6 +11,6 @@ class Config(object):
     SECURITY_PASSWORD_SALT = "fsdfdfsdfdfsdafds"
 
 
-    SQLALCHEMY_DATABASE_URI= "postgresql://alan:3571@localhost:5432/fias"
+    SQLALCHEMY_DATABASE_URI= "postgresql://alan:3571@localhost:5432/short_fias"
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     # SQLALCHEMY_ECHO = True
